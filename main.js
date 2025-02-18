@@ -1,8 +1,8 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const auth = require('./src/js/auth');
-const dashboard = require('./src/js/dashboard');
 const members = require('./src/js/members');
+const payments = require('./src/js/payments');
 
 let mainWindow;
 
@@ -17,12 +17,10 @@ function createWindow() {
     },
   });
 
-  // Cargar la página de inicio de sesión
   mainWindow.loadFile('src/index.html');
   mainWindow.on('closed', () => (mainWindow = null));
 }
 
-// Manejador para el inicio de sesión
 ipcMain.handle('login', async (event, username, password) => {
   try {
     const result = await auth.login(username, password);
@@ -33,24 +31,22 @@ ipcMain.handle('login', async (event, username, password) => {
   }
 });
 
-// Manejador para obtener datos del dashboard
-ipcMain.handle('getDashboardData', async () => {
-  try {
-    const data = await dashboard.getDashboardData();
-    return data;
-  } catch (error) {
-    console.error('Error al obtener datos del dashboard:', error);
-    return { success: false, message: 'Error interno' };
-  }
-});
-
-// Manejador para obtener miembros
 ipcMain.handle('getMembers', async () => {
   try {
     const data = await members.getMembers();
     return data;
   } catch (error) {
     console.error('Error al obtener miembros:', error);
+    return { success: false, message: 'Error interno' };
+  }
+});
+
+ipcMain.handle('addMember', async (event, member) => {
+  try {
+    const result = await members.addMember(member);
+    return result;
+  } catch (error) {
+    console.error('Error al agregar miembro:', error);
     return { success: false, message: 'Error interno' };
   }
 });

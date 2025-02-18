@@ -6,10 +6,94 @@
   <title>Dashboard - Gym Control</title>
   <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    /* Estilos aquí */
+    body {
+      background: #f8f9fa;
+      font-family: Arial, sans-serif;
+    }
+    .sidebar {
+      background: #343a40;
+      color: white;
+      height: 100vh;
+      position: fixed;
+      width: 250px;
+      padding: 20px;
+    }
+    .content {
+      margin-left: 250px;
+      padding: 20px;
+    }
+    .card {
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
-  <!-- Contenido del Dashboard -->
+  <div class="sidebar">
+    <h4>Gym Control</h4>
+    <ul class="nav flex-column">
+      <li class="nav-item"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
+      <li class="nav-item"><a class="nav-link" href="members.html">Miembros</a></li>
+      <li class="nav-item"><a class="nav-link" href="payments.html">Pagos</a></li>
+      <li class="nav-item"><a class="nav-link" href="groups.html">Grupos</a></li>
+      <li class="nav-item"><a class="nav-link" href="settings.html">Configuración</a></li>
+    </ul>
+  </div>
+
+  <div class="content">
+    <h2>Dashboard</h2>
+    <p>Bienvenido, Admin</p>
+    <button class="btn btn-danger" onclick="logout()">Cerrar Sesión</button>
+
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5>Total de Miembros</h5>
+            <p id="totalMembers">Cargando...</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5>Nuevos Miembros (Este Mes)</h5>
+            <p id="newMembers">Cargando...</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5>Membresías por Expirar</h5>
+            <p id="expiringMemberships">Cargando...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="addMember()">Agregar Miembro</button>
+    <button class="btn btn-success">Renovar Membresía</button>
+  </div>
+
+  <script>
+    window.onload = async () => {
+      try {
+        const data = await window.electronAPI.getDashboardData();
+        document.getElementById('totalMembers').textContent = data.activeMembers || 0;
+        document.getElementById('newMembers').textContent = data.newMembersThisMonth || 0;
+        document.getElementById('expiringMemberships').textContent = data.upcomingExpirations || 0;
+      } catch (error) {
+        toastr.error('Error al cargar los datos');
+      }
+    };
+
+    function logout() {
+      window.location.href = 'index.html';
+    }
+
+    function addMember() {
+      window.location.href = 'members.html';
+    }
+  </script>
 </body>
 </html>

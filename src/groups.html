@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grupos y Familias - Gym Control</title>
+  <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f8f9fa;
+      font-family: Arial, sans-serif;
+    }
+    .sidebar {
+      background: #343a40;
+      color: white;
+      height: 100vh;
+      position: fixed;
+      width: 250px;
+      padding: 20px;
+    }
+    .content {
+      margin-left: 250px;
+      padding: 20px;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h4>Gym Control</h4>
+    <ul class="nav flex-column">
+      <li class="nav-item"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
+      <li class="nav-item"><a class="nav-link" href="members.html">Miembros</a></li>
+      <li class="nav-item"><a class="nav-link" href="payments.html">Pagos</a></li>
+      <li class="nav-item"><a class="nav-link" href="groups.html">Grupos</a></li>
+      <li class="nav-item"><a class="nav-link" href="settings.html">Configuración</a></li>
+    </ul>
+  </div>
+
+  <div class="content">
+    <h2>Grupos y Familias</h2>
+    <button class="btn btn-primary" onclick="addGroup()">Agregar Grupo</button>
+
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre del Grupo</th>
+          <th>Responsable</th>
+          <th>Miembros</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="groupsTable">
+        <!-- Datos cargados dinámicamente -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    window.onload = async () => {
+      try {
+        const groups = await window.electronAPI.getGroups();
+        const tableBody = document.getElementById('groupsTable');
+        groups.forEach(group => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${group.id}</td>
+            <td>${group.name}</td>
+            <td>${group.responsible}</td>
+            <td>${group.membersCount}</td>
+            <td>
+              <button class="btn btn-sm btn-warning" onclick="editGroup(${group.id})">Editar</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteGroup(${group.id})">Eliminar</button>
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+      } catch (error) {
+        toastr.error('Error al cargar los grupos');
+      }
+    };
+
+    function addGroup() {
+      // Lógica para agregar un grupo
+      alert('Funcionalidad para agregar grupo');
+    }
+
+    function editGroup(id) {
+      // Lógica para editar un grupo
+      alert(`Editar grupo con ID: ${id}`);
+    }
+
+    function deleteGroup(id) {
+      // Lógica para eliminar un grupo
+      alert(`Eliminar grupo con ID: ${id}`);
+    }
+  </script>
+</body>
+</html>
