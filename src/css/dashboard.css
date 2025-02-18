@@ -121,12 +121,59 @@ body {
   .page-title {
     display: flex;
     align-items: center;
+    gap: 15px;
   }
   
   .page-title h4 {
     color: #ffffff;
     font-size: 1.2rem;
     margin: 0;
+  }
+  
+  .btn-inscribir {
+    background: #00ffff;
+    border: none;
+    padding: 8px 20px;
+    font-size: 0.9rem;
+    color: black;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap; /* Evitar que el texto se rompa */
+  }
+  
+  .btn-inscribir:hover {
+    background: #00bfff;
+    transform: scale(1.1);
+  }
+  
+  .btn-inscribir i {
+    font-size: 1rem;
+  }
+  
+  /* Contador de Notificaciones */
+  .notification-icon-container {
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .notification-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: red;
+    color: white;
+    font-size: 0.8rem;
+    padding: 2px 6px;
+    border-radius: 50%;
+    display: none;
+  }
+  
+  .notification-count.show {
+    display: block;
   }
   
   /* Barra de Búsqueda */
@@ -210,10 +257,15 @@ body {
     color: #ffffff; /* Cambiado a blanco */
   }
   
+  .notification-dropdown {
+    position: relative;
+  }
+  
   .notification-icon {
     font-size: 1.5rem;
     color: #ffffff; /* Blanco */
     transition: transform 0.3s ease, color 0.3s ease;
+    cursor: pointer;
   }
   
   .notification-icon:hover {
@@ -221,10 +273,46 @@ body {
     color: #ff9f43; /* Cambio de color al pasar el cursor */
   }
   
+  .notification-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid #00ffff;
+    border-radius: 10px;
+    padding: 10px;
+    display: none;
+    z-index: 1000;
+    min-width: 200px;
+  }
+  
+  .notification-menu.show {
+    display: block;
+  }
+  
+  .notification-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .notification-menu ul li {
+    color: white;
+    margin-bottom: 5px;
+    padding: 5px;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+  }
+  
+  .notification-menu ul li:hover {
+    background: rgba(0, 255, 255, 0.2);
+  }
+  
   .logout-icon {
     font-size: 1.5rem;
     color: #ff0000; /* Rojo */
     transition: transform 0.3s ease, color 0.3s ease;
+    cursor: pointer;
   }
   
   .logout-icon:hover {
@@ -316,7 +404,100 @@ body {
     color: #00ffff;
   }
   
-  /* Gráficos */
-  .chart-container {
+  /* Gráficos Alineados Horizontalmente */
+  .chart-row {
+    display: flex;
+    gap: 20px;
     margin-top: 20px;
+    flex-wrap: wrap; /* Responsivo */
+  }
+  
+  .chart-container {
+    flex: 1 1 calc(50% - 10px); /* Cada gráfico ocupa el 50% del ancho */
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid #00ffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 255, 255, 0.3);
+  }
+  
+  .chart-container canvas {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Botón de Descarga */
+  .btn-download {
+    background: #00ffff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    color: black;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .btn-download:hover {
+    background: #00bfff;
+    transform: scale(1.1);
+  }
+  
+  .btn-download i {
+    font-size: 1.2rem;
+  }
+  
+  /* Notificación Emergente */
+  .real-time-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    display: none;
+    z-index: 1000;
+    min-width: 250px;
+    animation: slideIn 0.5s ease-in-out;
+  }
+  
+  .real-time-notification p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .real-time-notification i {
+    font-size: 1.2rem;
+  }
+  
+  .close-notification {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #ff0000;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  
+  .close-notification:hover {
+    color: #ff4d4d;
+  }
+  
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
   }

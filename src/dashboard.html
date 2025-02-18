@@ -26,6 +26,9 @@
   <div class="header">
     <div class="page-title">
       <h4 id="pageTitle">Dashboard</h4>
+      <button class="btn btn-inscribir" onclick="window.location.href='members.html'">
+        <i class="fas fa-user-plus me-2"></i>Inscribir Miembro Nuevo
+      </button>
     </div>
     <div class="search-bar">
       <input type="text" id="searchInput" placeholder="Buscar...">
@@ -45,13 +48,26 @@
         <i class="fas fa-user-circle"></i>
         <span>Bienvenido, Admin</span>
       </div>
-      <i class="fas fa-bell notification-icon" title="Notificaciones"></i>
+      <div class="notification-dropdown">
+        <div class="notification-icon-container" onclick="toggleNotifications()">
+          <i class="fas fa-bell notification-icon"></i>
+          <span class="notification-count show" id="notificationCount">3</span>
+        </div>
+        <div class="notification-menu" id="notificationMenu">
+          <ul>
+            <li><i class="fas fa-exclamation-circle me-2"></i>La membresía de Juan Pérez expira en 3 días.</li>
+            <li><i class="fas fa-exclamation-circle me-2"></i>Hay 5 pagos pendientes este mes.</li>
+            <li><i class="fas fa-exclamation-circle me-2"></i>El inventario de proteína está bajo.</li>
+          </ul>
+        </div>
+      </div>
       <i class="fas fa-sign-out-alt logout-icon" title="Cerrar Sesión" onclick="logout()"></i>
     </div>
   </div>
 
   <!-- Contenido Principal -->
-  <div class="content">
+  <div class="content page-transition">
+    <!-- Tarjetas de Resumen -->
     <div class="row mt-4">
       <div class="col-md-4">
         <div class="card">
@@ -82,49 +98,48 @@
       </div>
     </div>
 
-    <!-- Gráfico de Ingresos Mensuales -->
-    <div class="chart-container">
-      <canvas id="incomeChart" width="400" height="200"></canvas>
+    <!-- Gráficos Alineados Horizontalmente -->
+    <div class="chart-row">
+      <div class="chart-container">
+        <canvas id="incomeDistributionChart" width="300" height="200"></canvas>
+      </div>
+      <div class="chart-container">
+        <canvas id="barChart" width="300" height="200"></canvas>
+      </div>
     </div>
+
+    <!-- Botón de Descarga -->
+    <button class="btn btn-download" onclick="downloadData()">
+      <i class="fas fa-download"></i> Descargar Datos
+    </button>
 
     <!-- Resultados de la Búsqueda -->
     <div id="results" class="mt-4"></div>
   </div>
 
-  <script>
-    // Resaltar el enlace activo en el Sidebar
-    document.addEventListener('DOMContentLoaded', () => {
-      const currentPage = window.location.pathname.split('/').pop();
-      const links = document.querySelectorAll('.sidebar a');
-      links.forEach(link => {
-        if (link.getAttribute('href').includes(currentPage)) {
-          link.classList.add('active');
-        }
-      });
-    });
+  <!-- Notificación Emergente -->
+  <div id="realTimeNotification" class="real-time-notification">
+    <i class="fas fa-bell me-2"></i>
+    <p>Nueva notificación: <span id="notificationMessage"></span></p>
+    <i class="fas fa-times close-notification" onclick="closeNotification()"></i>
+  </div>
 
+  <script>
     // Simulación de datos para el Dashboard
     window.onload = async () => {
       try {
-        // Datos para el gráfico
-        const ctx = document.getElementById('incomeChart').getContext('2d');
-        const incomeChart = new Chart(ctx, {
-          type: 'bar',
+        // Gráfico Circular: Distribución de Ingresos
+        const ctxPie = document.getElementById('incomeDistributionChart').getContext('2d');
+        const incomeDistributionChart = new Chart(ctxPie, {
+          type: 'pie',
           data: {
-            labels: ['Enero', 'Febrero', 'Marzo', 'Abril'],
+            labels: ['Membresías', 'Productos', 'Clases'],
             datasets: [
               {
-                label: 'Ingresos por Membresías',
-                data: [5000, 6000, 7000, 8000],
-                backgroundColor: '#00ffff',
-                borderColor: '#00ffff',
-                borderWidth: 1
-              },
-              {
-                label: 'Ingresos por Ventas de Productos',
-                data: [2000, 2500, 3000, 3500],
-                backgroundColor: '#ff9f43',
-                borderColor: '#ff9f43',
+                label: 'Distribución de Ingresos',
+                data: [60, 30, 10], // Ejemplo de datos
+                backgroundColor: ['#00ffff', '#ff9f43', '#ff4d4d'],
+                borderColor: ['#00ffff', '#ff9f43', '#ff4d4d'],
                 borderWidth: 1
               }
             ]
@@ -137,11 +152,49 @@
               },
               title: {
                 display: true,
-                text: 'Ingresos Mensuales'
+                text: 'Distribución de Ingresos'
               }
             }
           }
         });
+
+        // Gráfico de Barras: Ingresos Mensuales
+        const ctxBar = document.getElementById('barChart').getContext('2d');
+        const barChart = new Chart(ctxBar, {
+          type: 'bar',
+          data: {
+            labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'],
+            datasets: [{
+              label: 'Ingresos Mensuales',
+              data: [12000, 15000, 18000, 16000, 20000, 22000],
+              backgroundColor: ['#00ffff', '#ff9f43', '#ff4d4d', '#00bfff', '#ff6f61', '#6a1b9a'],
+              borderColor: ['#00ffff', '#ff9f43', '#ff4d4d', '#00bfff', '#ff6f61', '#6a1b9a'],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: 'Ingresos Mensuales'
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+
+        // Simulación de notificación en tiempo real
+        setTimeout(() => {
+          showRealTimeNotification("Un nuevo miembro se ha registrado.");
+        }, 3000);
       } catch (error) {
         console.error('Error al cargar los datos:', error);
       }
@@ -195,6 +248,43 @@
     // Cerrar sesión
     function logout() {
       window.location.href = 'index.html';
+    }
+
+    // Descargar Datos
+    function downloadData() {
+      const data = "ID,Nombre,Categoría\n1,Juan Pérez,Miembro\n2,María López,Producto";
+      const blob = new Blob([data], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'datos.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Mostrar/Ocultar Notificaciones Dropdown
+    function toggleNotifications() {
+      const menu = document.getElementById('notificationMenu');
+      menu.classList.toggle('show');
+    }
+
+    // Mostrar Notificación en Tiempo Real
+    function showRealTimeNotification(message) {
+      const notification = document.getElementById('realTimeNotification');
+      const messageElement = document.getElementById('notificationMessage');
+      messageElement.textContent = message;
+      notification.style.display = 'block';
+
+      // Ocultar después de 5 segundos
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 5000);
+    }
+
+    // Cerrar Notificación Manualmente
+    function closeNotification() {
+      const notification = document.getElementById('realTimeNotification');
+      notification.style.display = 'none';
     }
   </script>
 </body>
