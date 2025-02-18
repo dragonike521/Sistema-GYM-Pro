@@ -476,6 +476,7 @@ body {
   
   .real-time-notification i {
     font-size: 1.2rem;
+    margin-right: 10px; /* Alinear el ícono a la izquierda del texto */
   }
   
   .close-notification {
