@@ -5,94 +5,196 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - Gym Control</title>
   <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      background: #f8f9fa;
-      font-family: Arial, sans-serif;
-    }
-    .sidebar {
-      background: #343a40;
-      color: white;
-      height: 100vh;
-      position: fixed;
-      width: 250px;
-      padding: 20px;
-    }
-    .content {
-      margin-left: 250px;
-      padding: 20px;
-    }
-    .card {
-      margin-bottom: 20px;
-    }
-  </style>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link href="css/dashboard.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+  <!-- Sidebar -->
   <div class="sidebar">
-    <h4>Gym Control</h4>
-    <ul class="nav flex-column">
-      <li class="nav-item"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
-      <li class="nav-item"><a class="nav-link" href="members.html">Miembros</a></li>
-      <li class="nav-item"><a class="nav-link" href="payments.html">Pagos</a></li>
-      <li class="nav-item"><a class="nav-link" href="groups.html">Grupos</a></li>
-      <li class="nav-item"><a class="nav-link" href="settings.html">Configuración</a></li>
-    </ul>
+    <h4><i class="fas fa-dumbbell me-2"></i>Gym Control</h4>
+    <a href="dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+    <a href="members.html"><i class="fas fa-users"></i><span>Miembros</span></a>
+    <a href="payments.html"><i class="fas fa-dollar-sign"></i><span>Pagos</span></a>
+    <a href="finances.html"><i class="fas fa-chart-line"></i><span>Finanzas</span></a>
+    <a href="inventory.html"><i class="fas fa-box-open"></i><span>Inventario</span></a>
+    <a href="groups.html"><i class="fas fa-users-cog"></i><span>Grupos</span></a>
+    <a href="settings.html"><i class="fas fa-cog"></i><span>Configuración</span></a>
   </div>
 
-  <div class="content">
-    <h2>Dashboard</h2>
-    <p>Bienvenido, Admin</p>
-    <button class="btn btn-danger" onclick="logout()">Cerrar Sesión</button>
+  <!-- Header (Barra Superior) -->
+  <div class="header">
+    <div class="page-title">
+      <h4 id="pageTitle">Dashboard</h4>
+    </div>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Buscar...">
+      <select id="filterCategory">
+        <option value="all">Todos</option>
+        <option value="members">Miembros</option>
+        <option value="payments">Pagos</option>
+        <option value="products">Productos</option>
+        <option value="finances">Finanzas</option>
+      </select>
+      <button class="btn btn-futuristic" onclick="applyFilters()">
+        <i class="fas fa-search"></i>
+      </button>
+    </div>
+    <div class="actions">
+      <div class="user-info">
+        <i class="fas fa-user-circle"></i>
+        <span>Bienvenido, Admin</span>
+      </div>
+      <i class="fas fa-bell notification-icon" title="Notificaciones"></i>
+      <i class="fas fa-sign-out-alt logout-icon" title="Cerrar Sesión" onclick="logout()"></i>
+    </div>
+  </div>
 
-    <div class="row">
+  <!-- Contenido Principal -->
+  <div class="content">
+    <div class="row mt-4">
       <div class="col-md-4">
         <div class="card">
-          <div class="card-body">
-            <h5>Total de Miembros</h5>
-            <p id="totalMembers">Cargando...</p>
+          <div class="card-body text-center">
+            <i class="fas fa-money-bill-wave icon mb-3"></i>
+            <h5>Ingresos Totales</h5>
+            <p id="totalIncome">$15,000</p>
           </div>
         </div>
       </div>
       <div class="col-md-4">
         <div class="card">
-          <div class="card-body">
-            <h5>Nuevos Miembros (Este Mes)</h5>
-            <p id="newMembers">Cargando...</p>
+          <div class="card-body text-center">
+            <i class="fas fa-dumbbell icon mb-3"></i>
+            <h5>Ingresos por Membresías</h5>
+            <p id="membershipIncome">$10,000</p>
           </div>
         </div>
       </div>
       <div class="col-md-4">
         <div class="card">
-          <div class="card-body">
-            <h5>Membresías por Expirar</h5>
-            <p id="expiringMemberships">Cargando...</p>
+          <div class="card-body text-center">
+            <i class="fas fa-shopping-cart icon mb-3"></i>
+            <h5>Ingresos por Ventas de Productos</h5>
+            <p id="productIncome">$5,000</p>
           </div>
         </div>
       </div>
     </div>
 
-    <button class="btn btn-primary" onclick="addMember()">Agregar Miembro</button>
-    <button class="btn btn-success">Renovar Membresía</button>
+    <!-- Gráfico de Ingresos Mensuales -->
+    <div class="chart-container">
+      <canvas id="incomeChart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Resultados de la Búsqueda -->
+    <div id="results" class="mt-4"></div>
   </div>
 
   <script>
+    // Resaltar el enlace activo en el Sidebar
+    document.addEventListener('DOMContentLoaded', () => {
+      const currentPage = window.location.pathname.split('/').pop();
+      const links = document.querySelectorAll('.sidebar a');
+      links.forEach(link => {
+        if (link.getAttribute('href').includes(currentPage)) {
+          link.classList.add('active');
+        }
+      });
+    });
+
+    // Simulación de datos para el Dashboard
     window.onload = async () => {
       try {
-        const data = await window.electronAPI.getDashboardData();
-        document.getElementById('totalMembers').textContent = data.activeMembers || 0;
-        document.getElementById('newMembers').textContent = data.newMembersThisMonth || 0;
-        document.getElementById('expiringMemberships').textContent = data.upcomingExpirations || 0;
+        // Datos para el gráfico
+        const ctx = document.getElementById('incomeChart').getContext('2d');
+        const incomeChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['Enero', 'Febrero', 'Marzo', 'Abril'],
+            datasets: [
+              {
+                label: 'Ingresos por Membresías',
+                data: [5000, 6000, 7000, 8000],
+                backgroundColor: '#00ffff',
+                borderColor: '#00ffff',
+                borderWidth: 1
+              },
+              {
+                label: 'Ingresos por Ventas de Productos',
+                data: [2000, 2500, 3000, 3500],
+                backgroundColor: '#ff9f43',
+                borderColor: '#ff9f43',
+                borderWidth: 1
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: 'Ingresos Mensuales'
+              }
+            }
+          }
+        });
       } catch (error) {
-        toastr.error('Error al cargar los datos');
+        console.error('Error al cargar los datos:', error);
       }
     };
 
-    function logout() {
-      window.location.href = 'index.html';
+    // Función para aplicar filtros
+    function applyFilters() {
+      const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+      const filterCategory = document.getElementById('filterCategory').value;
+
+      // Ejemplo de datos locales
+      const data = [
+        { id: 1, name: "Juan Pérez", category: "members" },
+        { id: 2, name: "Pago Mensual", category: "payments" },
+        { id: 3, name: "Proteína Whey", category: "products" },
+        { id: 4, name: "Ingreso Membresía", category: "finances" }
+      ];
+
+      const filteredData = data.filter(item => {
+        const matchesSearch = item.name.toLowerCase().includes(searchQuery);
+        const matchesCategory = filterCategory === "all" || item.category === filterCategory;
+        return matchesSearch && matchesCategory;
+      });
+
+      displayResults(filteredData);
     }
 
-    function addMember() {
-      window.location.href = 'members.html';
+    // Mostrar resultados filtrados
+    function displayResults(results) {
+      const resultsContainer = document.getElementById('results');
+      resultsContainer.innerHTML = ''; // Limpiar resultados anteriores
+
+      if (results.length === 0) {
+        resultsContainer.innerHTML = '<p>No se encontraron resultados.</p>';
+        return;
+      }
+
+      results.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card mb-3';
+        card.innerHTML = `
+          <div class="card-body">
+            <h5>${item.name}</h5>
+            <p>Categoría: ${item.category}</p>
+          </div>
+        `;
+        resultsContainer.appendChild(card);
+      });
+    }
+
+    // Cerrar sesión
+    function logout() {
+      window.location.href = 'index.html';
     }
   </script>
 </body>

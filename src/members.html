@@ -1,0 +1,62 @@
+<script>
+    window.onload = async () => {
+      try {
+        const members = await window.electronAPI.getMembers();
+        const tableBody = document.getElementById('membersTable');
+        members.forEach(member => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${member.id}</td>
+            <td>${member.name}</td>
+            <td>${member.phone}</td>
+            <td>${member.email}</td>
+            <td>${member.membershipType}</td>
+            <td>${member.status}</td>
+            <td>${member.startDate}</td>
+            <td>${member.endDate}</td>
+            <td>
+              <button class="btn btn-sm btn-warning" onclick="editMember(${member.id})">Editar</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteMember(${member.id})">Eliminar</button>
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+      } catch (error) {
+        toastr.error('Error al cargar los miembros');
+      }
+    };
+  
+    async function addMember() {
+      const name = prompt('Nombre del miembro:');
+      const phone = prompt('Teléfono:');
+      const email = prompt('Correo electrónico:');
+      const membershipType = prompt('Tipo de membresía:');
+      const status = prompt('Estado (active/inactive):');
+      const startDate = prompt('Fecha de inicio (YYYY-MM-DD):');
+      const endDate = prompt('Fecha de fin (YYYY-MM-DD):');
+  
+      if (name && phone && email && membershipType && status && startDate && endDate) {
+        try {
+          const result = await window.electronAPI.addMember({
+            name,
+            phone,
+            email,
+            membershipType,
+            status,
+            startDate,
+            endDate,
+          });
+          if (result.success) {
+            toastr.success('Miembro agregado correctamente');
+            location.reload(); // Recargar la página para mostrar los cambios
+          } else {
+            toastr.error('Error al agregar miembro');
+          }
+        } catch (error) {
+          toastr.error('Error al agregar miembro');
+        }
+      } else {
+        toastr.error('Por favor, completa todos los campos.');
+      }
+    }
+  </script>

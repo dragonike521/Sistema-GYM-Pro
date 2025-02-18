@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron ."
+    "start": "electron .",
+    "build:css": "npx tailwindcss -i ./src/css/tailwind.css -o ./src/css/styles.css --watch"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +22,9 @@
     "toastr": "^2.1.4"
   },
   "devDependencies": {
-    "electron-packager": "^17.1.2"
+    "autoprefixer": "^10.4.20",
+    "electron-packager": "^17.1.2",
+    "postcss": "^8.5.2",
+    "tailwindcss": "^4.0.6"
   }
 }
