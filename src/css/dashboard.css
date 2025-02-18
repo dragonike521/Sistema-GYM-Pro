@@ -502,3 +502,91 @@ body {
       opacity: 1;
     }
   }
+  
+  /* Diseño Responsivo */
+  @media (max-width: 1200px) {
+    .chart-container {
+      flex: 1 1 100%; /* Un solo gráfico por fila en pantallas medianas */
+    }
+  
+    .search-bar input,
+    .search-bar select {
+      width: 150px; /* Reducir el ancho de los campos de búsqueda */
+    }
+  }
+  
+  @media (max-width: 992px) {
+    .header {
+      grid-template-columns: 1fr 1fr; /* Reorganizar la barra superior */
+    }
+  
+    .page-title h4 {
+      font-size: 1rem; /* Reducir el tamaño del título */
+    }
+  
+    .btn-inscribir {
+      font-size: 0.8rem;
+      padding: 6px 15px;
+    }
+  
+    .actions {
+      gap: 10px; /* Reducir el espacio entre los íconos */
+    }
+  
+    .user-info span {
+      display: none; /* Ocultar el texto "Bienvenido, Admin" */
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 50px; /* Reducir aún más el Sidebar */
+    }
+  
+    .sidebar:hover {
+      width: 200px; /* Expandir menos al pasar el cursor */
+    }
+  
+    .header {
+      grid-template-columns: 1fr; /* Una sola columna para la barra superior */
+      text-align: center;
+    }
+  
+    .page-title {
+      justify-content: center; /* Centrar el título */
+    }
+  
+    .search-bar {
+      justify-content: center; /* Centrar la barra de búsqueda */
+    }
+  
+    .actions {
+      justify-content: center; /* Centrar los íconos de acciones */
+    }
+  
+    .chart-container {
+      flex: 1 1 100%; /* Un solo gráfico por fila en pantallas pequeñas */
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .header {
+      padding: 10px; /* Reducir el padding */
+    }
+  
+    .btn-inscribir {
+      font-size: 0.7rem;
+      padding: 5px 10px;
+    }
+  
+    .real-time-notification {
+      bottom: 10px;
+      right: 10px;
+      padding: 10px;
+      min-width: 200px;
+    }
+  
+    .real-time-notification p {
+      font-size: 0.9rem;
+    }
+  }
